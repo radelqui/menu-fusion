@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#dc2626">
+  <meta name="description" content="Menú semanal fusión España + República Dominicana para Puerto Plata">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>Menú Fusión - Puerto Plata</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --red: #dc2626;
+      --red-dark: #b91c1c;
+      --orange: #ea580c;
+      --amber: #f59e0b;
+      --green: #16a34a;
+      --gray: #6b7280;
+    }
+    
+    body {
+      font-family: 'Nunito', -apple-system, sans-serif;
+      background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 50%, #fef2f2 100%);
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--red-dark) 0%, var(--red) 50%, var(--orange) 100%);
+      color: white;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    header h1 span.flags {
+      font-size: 0.75rem;
+      font-weight: 400;
+      opacity: 0.85;
+    }
+    
+    header p {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+    
+    nav {
+      background: white;
+      display: flex;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    nav button {
+      flex: 1;
+      padding: 12px 8px;
+      border: none;
+      background: white;
+      color: var(--gray);
+      font-family: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    nav button.active {
+      background: var(--red);
+      color: white;
+      font-weight: 700;
+    }
+    
+    nav button span.icon {
+      display: block;
+      font-size: 1.25rem;
+      margin-bottom: 2px;
+    }
+    
+    main {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    
+    .card-header {
+      background: linear-gradient(135deg, var(--red) 0%, var(--orange) 100%);
+      color: white;
+      padding: 16px;
+    }
+    
+    .card-header h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    
+    /* Day Selector */
+    .day-selector {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .day-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background: white;
+      color: var(--gray);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .day-btn.active {
+      background: var(--red);
+      color: white;
+      box-shadow: 0 4px 12px rgba(220,38,38,0.3);
+    }
+    
+    /* Menu Items */
+    .menu-item {
+      padding: 16px;
+      border-bottom: 1px solid #f3f4f6;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .menu-item:hover { background: #fffbeb; }
+    .menu-item:last-child { border-bottom: none; }
+    
+    .menu-item .tipo {
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+    
+    .menu-item h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-top: 4px;
+    }
+    
+    .menu-item .tiempo {
+      display: inline-block;
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 0.7rem;
+      padding: 4px 8px;
+      border-radius: 12px;
+      margin-top: 6px;
+    }
+    
+    .menu-item .ver-receta {
+      font-size: 0.75rem;
+      color: var(--red);
+      margin-top: 6px;
+      display: block;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 16px;
+    }
+    
+    .stat-box {
+      text-align: center;
+      padding: 12px 8px;
+      border-radius: 12px;
+    }
+    
+    .stat-box.red { background: #fef2f2; }
+    .stat-box.amber { background: #fffbeb; }
+    .stat-box.green { background: #f0fdf4; }
+    
+    .stat-box .number {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1f2937;
+    }
+    
+    .stat-box .label {
+      font-size: 0.7rem;
+      color: var(--gray);
+    }
+    
+    /* Shopping List */
+    .progress-bar {
+      padding: 16px;
+      background: white;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .progress-track {
+      width: 100%;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green) 0%, #22c55e 100%);
+      border-radius: 6px;
+      transition: width 0.3s;
+    }
+    
+    .progress-totals {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+    
+    .progress-totals .checked { color: var(--green); font-weight: 700; }
+    .progress-totals .total { color: var(--gray); }
+    
+    .category-header {
+      background: linear-gradient(135deg, var(--amber) 0%, var(--orange) 100%);
+      color: white;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+    }
+    
+    .category-header .price {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+    }
+    
+    .shop-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f3f4f6;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .shop-item:last-child { border-bottom: none; }
+    .shop-item.checked { background: #f0fdf4; }
+    .shop-item.checked .item-name { text-decoration: line-through; color: #9ca3af; }
+    .shop-item.checked .item-price { color: #9ca3af; }
+    
+    .shop-item input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      margin-right: 12px;
+      accent-color: var(--green);
+    }
+    
+    .shop-item .item-info { flex: 1; }
+    .shop-item .item-name { font-weight: 600; color: #1f2937; }
+    .shop-item .item-qty { font-size: 0.85rem; color: var(--gray); margin-left: 6px; }
+    .shop-item .item-price { font-weight: 700; color: var(--red); text-align: right; }
+    .shop-item .item-unit { font-size: 0.75rem; color: var(--gray); display: block; }
+    
+    /* Recipes */
+    .recipe-card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    
+    .recipe-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+    
+    .recipe-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+    
+    .recipe-card .origin {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+    
+    .recipe-detail { display: none; }
+    .recipe-detail.active { display: block; }
+    
+    .back-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #f3f4f6;
+      border: none;
+      text-align: left;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--gray);
+      cursor: pointer;
+    }
+    
+    .recipe-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.85);
+    }
+    
+    .recipe-section {
+      padding: 16px;
+    }
+    
+    .recipe-section h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 12px;
+    }
+    
+    .recipe-section ul {
+      list-style: none;
+    }
+    
+    .recipe-section ul li {
+      padding: 6px 0;
+      color: #374151;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    
+    .recipe-section ul li::before {
+      content: "•";
+      color: var(--amber);
+      font-weight: bold;
+    }
+    
+    .recipe-section ol {
+      list-style: none;
+      counter-reset: steps;
+    }
+    
+    .recipe-section ol li {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: #374151;
+    }
+    
+    .recipe-section ol li::before {
+      counter-increment: steps;
+      content: counter(steps);
+      background: var(--red);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    
+    /* Budget */
+    .budget-main {
+      background: linear-gradient(135deg, #15803d 0%, var(--green) 100%);
+      border-radius: 16px;
+      padding: 20px;
+      color: white;
+      margin-bottom: 16px;
+    }
+    
+    .budget-main .label {
+      font-size: 1rem;
+      opacity: 0.85;
+    }
+    
+    .budget-main .amount {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+    
+    .budget-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    
+    .budget-grid .box {
+      background: rgba(255,255,255,0.2);
+      padding: 12px;
+      border-radius: 12px;
+    }
+    
+    .budget-grid .box .label {
+      font-size: 0.85rem;
+      opacity: 0.85;
+    }
+    
+    .budget-grid .box .value {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    
+    .breakdown-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    
+    .breakdown-item.red { background: #fef2f2; }
+    .breakdown-item.amber { background: #fffbeb; }
+    .breakdown-item.blue { background: #eff6ff; }
+    .breakdown-item.orange { background: #fff7ed; }
+    .breakdown-item.cyan { background: #ecfeff; }
+    .breakdown-item.total {
+      background: #1f2937;
+      color: white;
+      margin-top: 12px;
+    }
+    
+    .breakdown-item span:last-child { font-weight: 700; }
+    
+    .tips-box {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 16px;
+      padding: 16px;
+    }
+    
+    .tips-box h3 {
+      color: #92400e;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+    
+    .tips-box ul {
+      list-style: none;
+      font-size: 0.9rem;
+      color: #a16207;
+    }
+    
+    .tips-box ul li {
+      padding: 4px 0;
+    }
+    
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+      padding: 8px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--gray);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>
+      <span>🍳</span>
+      Menú Fusión
+      <span class="flags">ESP🇪🇸 + RD🇩🇴</span>
+    </h1>
+    <p>4 personas • Puerto Plata • Diciembre 2025</p>
+  </header>
+
+  <nav>
+    <button class="active" data-tab="menu">
+      <span class="icon">📅</span>
+      Menú
+    </button>
+    <button data-tab="compras">
+      <span class="icon">🛒</span>
+      Compras
+    </button>
+    <button data-tab="recetas">
+      <span class="icon">👨‍🍳</span>
+      Recetas
+    </button>
+    <button data-tab="presupuesto">
+      <span class="icon">💰</span>
+      Dinero
+    </button>
+  </nav>
+
+  <main>
+    <!-- MENU TAB -->
+    <div id="menu" class="tab-content active">
+      <div class="day-selector">
+        <button class="day-btn active" data-day="0">Lun</button>
+        <button class="day-btn" data-day="1">Mar</button>
+        <button class="day-btn" data-day="2">Mié</button>
+        <button class="day-btn" data-day="3">Jue</button>
+        <button class="day-btn" data-day="4">Vie</button>
+        <button class="day-btn" data-day="5">Sáb</button>
+        <button class="day-btn" data-day="6">Dom</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 id="day-title">Lunes</h2>
+        </div>
+        <div id="day-meals"></div>
+      </div>
+
+      <div class="card">
+        <div class="stats-grid">
+          <div class="stat-box red">
+            <div class="number">21</div>
+            <div class="label">comidas</div>
+          </div>
+          <div class="stat-box amber">
+            <div class="number">&lt;1h</div>
+            <div class="label">cada plato</div>
+          </div>
+          <div class="stat-box green">
+            <div class="number">RD$8.5k</div>
+            <div class="label">por semana</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPRAS TAB -->
+    <div id="compras" class="tab-content">
+      <div class="progress-bar">
+        <div class="progress-header">
+          <span style="font-weight:600">Progreso de compras</span>
+          <span id="items-count">0/32 items</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+        <div class="progress-totals">
+          <span class="checked">✓ RD$<span id="checked-total">0</span></span>
+          <span class="total">de RD$8,475</span>
+        </div>
+      </div>
+
+      <div id="shopping-list"></div>
+    </div>
+
+    <!-- RECETAS TAB -->
+    <div id="recetas" class="tab-content">
+      <div id="recipe-list"></div>
+      <div id="recipe-detail" class="recipe-detail"></div>
+    </div>
+
+    <!-- PRESUPUESTO TAB -->
+    <div id="presupuesto" class="tab-content">
+      <div class="budget-main">
+        <div class="label">Presupuesto Mensual</div>
+        <div class="amount">RD$43,400</div>
+        <div class="budget-grid">
+          <div class="box">
+            <div class="label">Gasto Estimado</div>
+            <div class="value">RD$42,990</div>
+          </div>
+          <div class="box">
+            <div class="label">Sobra</div>
+            <div class="value" style="color:#bbf7d0">RD$410</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:16px">
+        <h3 style="font-weight:700;margin-bottom:12px">📋 Desglose Mensual</h3>
+        <div class="breakdown-item red">
+          <span>🍽️ Comida (4 semanas)</span>
+          <span>RD$33,900</span>
+        </div>
+        <div class="breakdown-item amber">
+          <span>📦 Imprevistos (+10%)</span>
+          <span>RD$3,390</span>
+        </div>
+        <div class="breakdown-item blue">
+          <span>🧴 Higiene</span>
+          <span>RD$3,000</span>
+        </div>
+        <div class="breakdown-item orange">
+          <span>🔥 Gas</span>
+          <span>RD$2,000</span>
+        </div>
+        <div class="breakdown-item cyan">
+          <span>💧 Agua</span>
+          <span>RD$700</span>
+        </div>
+        <div class="breakdown-item total">
+          <span>TOTAL</span>
+          <span style="font-size:1.1rem">RD$42,990</span>
+        </div>
+      </div>
+
+      <div class="tips-box">
+        <h3>💡 Consejos para Ahorrar</h3>
+        <ul>
+          <li>• Compra víveres en el Mercado Nuevo</li>
+          <li>• Pescado fresco en el Malecón con pescadores</li>
+          <li>• Jueves: precios INESPRE en supermercados</li>
+          <li>• Compra proteínas en ofertas semanales</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Familia Española en Puerto Plata • Precios Dic 2025
+  </footer>
+
+  <script>
+    // DATA
+    const menuData = {
+      days: [
+        { name: "Lunes", meals: [
+          { tipo: "🌅 Desayuno", plato: "Mangú con los 3 golpes", tiempo: "25 min", receta: "mangu" },
+          { tipo: "☀️ Almuerzo", plato: "Patatas a la riojana con longaniza", tiempo: "40 min", receta: "riojana" },
+          { tipo: "🌙 Cena", plato: "Espaguetis con salsa de tomate y carne", tiempo: "35 min", receta: "espaguetis" }
+        ]},
+        { name: "Martes", meals: [
+          { tipo: "🌅 Desayuno", plato: "Huevos revueltos con tostadas", tiempo: "15 min", receta: null },
+          { tipo: "☀️ Almuerzo", plato: "Lentejas estofadas con longaniza", tiempo: "45 min", receta: "lentejas" },
+          { tipo: "🌙 Cena", plato: "Pollo guisado con arroz blanco", tiempo: "45 min", receta: "pollo-guisado" }
+        ]},
+        { name: "Miércoles", meals: [
+          { tipo: "🌅 Desayuno", plato: "Mangú con salami y huevo", tiempo: "25 min", receta: "mangu" },
+          { tipo: "☀️ Almuerzo", plato: "Merluza en salsa verde con arroz", tiempo: "35 min", receta: "merluza" },
+          { tipo: "🌙 Cena", plato: "Plátanos maduros guisados con tomate", tiempo: "30 min", receta: "maduros" }
+        ]},
+        { name: "Jueves", meals: [
+          { tipo: "🌅 Desayuno", plato: "Tortilla española con pan", tiempo: "30 min", receta: "tortilla" },
+          { tipo: "☀️ Almuerzo", plato: "Cerdo guisado con moro de habichuelas", tiempo: "55 min", receta: "cerdo-moro" },
+          { tipo: "🌙 Cena", plato: "Sardinas con tostones y ensalada", tiempo: "20 min", receta: null }
+        ]},
+        { name: "Viernes", meals: [
+          { tipo: "🌅 Desayuno", plato: "Huevos fritos con salami y mangú", tiempo: "25 min", receta: "mangu" },
+          { tipo: "☀️ Almuerzo", plato: "Garbanzos con espinacas", tiempo: "50 min", receta: "garbanzos" },
+          { tipo: "🌙 Cena", plato: "Pollo al ajillo con papas fritas", tiempo: "40 min", receta: "pollo-ajillo" }
+        ]},
+        { name: "Sábado", meals: [
+          { tipo: "🌅 Desayuno", plato: "Mangú con los 3 golpes", tiempo: "25 min", receta: "mangu" },
+          { tipo: "☀️ Almuerzo", plato: "Sancocho de res dominicano", tiempo: "55 min", receta: "sancocho" },
+          { tipo: "🌙 Cena", plato: "Merluza empanizada con ensalada", tiempo: "30 min", receta: null }
+        ]},
+        { name: "Domingo", meals: [
+          { tipo: "🌅 Desayuno", plato: "Tortilla española con café", tiempo: "30 min", receta: "tortilla" },
+          { tipo: "☀️ Almuerzo", plato: "Locrio de pollo dominicano", tiempo: "45 min", receta: "locrio" },
+          { tipo: "🌙 Cena", plato: "Sobras o sándwich de salami", tiempo: "10 min", receta: null }
+        ]}
+      ],
+      shopping: {
+        "🥩 Proteínas": [
+          { nombre: "Pollo fresco", cantidad: "8 lb", precio: 632 },
+          { nombre: "Cerdo", cantidad: "4 lb", precio: 520 },
+          { nombre: "Res", cantidad: "3 lb", precio: 555 },
+          { nombre: "Longaniza", cantidad: "2 lb", precio: 300 },
+          { nombre: "Salami", cantidad: "2 lb", precio: 320 },
+          { nombre: "Huevos", cantidad: "2 cartones", precio: 500 },
+          { nombre: "Queso de freír", cantidad: "2 lb", precio: 340 },
+          { nombre: "Merluza congelada", cantidad: "3 lb", precio: 390 },
+          { nombre: "Sardinas lata", cantidad: "4 latas", precio: 240 }
+        ],
+        "🌾 Granos y Pastas": [
+          { nombre: "Arroz selecto", cantidad: "10 lb", precio: 450 },
+          { nombre: "Habichuelas rojas", cantidad: "2 lb", precio: 170 },
+          { nombre: "Lentejas", cantidad: "2 lb", precio: 130 },
+          { nombre: "Garbanzos", cantidad: "1 lb", precio: 80 },
+          { nombre: "Espaguetis", cantidad: "2 paq", precio: 90 }
+        ],
+        "🥔 Víveres y Vegetales": [
+          { nombre: "Plátanos verdes", cantidad: "14 unid", precio: 420 },
+          { nombre: "Plátanos maduros", cantidad: "8 unid", precio: 200 },
+          { nombre: "Papas", cantidad: "5 lb", precio: 190 },
+          { nombre: "Yuca", cantidad: "2 lb", precio: 60 },
+          { nombre: "Cebolla", cantidad: "2 lb", precio: 130 },
+          { nombre: "Ajo", cantidad: "½ lb", precio: 90 },
+          { nombre: "Ajíes", cantidad: "1 lb", precio: 80 },
+          { nombre: "Tomates", cantidad: "2 lb", precio: 150 },
+          { nombre: "Zanahoria", cantidad: "1 lb", precio: 50 },
+          { nombre: "Repollo", cantidad: "1 unid", precio: 50 }
+        ],
+        "🫒 Despensa": [
+          { nombre: "Aceite Crisol 64oz", cantidad: "1", precio: 350 },
+          { nombre: "Pasta tomate 900g", cantidad: "1", precio: 195 },
+          { nombre: "Sal", cantidad: "1 lb", precio: 45 },
+          { nombre: "Azúcar", cantidad: "2 lb", precio: 90 },
+          { nombre: "Sazón/cubitos", cantidad: "varios", precio: 70 },
+          { nombre: "Café", cantidad: "½ lb", precio: 170 }
+        ],
+        "🥛 Lácteos": [
+          { nombre: "Leche", cantidad: "2 litros", precio: 200 },
+          { nombre: "Margarina", cantidad: "1 lb", precio: 100 }
+        ],
+        "🍌 Frutas": [
+          { nombre: "Guineos", cantidad: "10 unid", precio: 80 },
+          { nombre: "Aguacates", cantidad: "4 unid", precio: 120 },
+          { nombre: "Limones", cantidad: "1 docena", precio: 90 }
+        ]
+      },
+      recipes: {
+        "riojana": {
+          nombre: "Patatas a la Riojana", tiempo: "40 min", porciones: "4 personas", origen: "🇪🇸 España",
+          ingredientes: ["2 lb papas en rodajas gruesas","½ lb longaniza en rodajas","1 cebolla grande picada","3 dientes de ajo picados","1 cucharada pimentón dulce","1 hoja de laurel","Agua o caldo","Sal, 2 cda aceite"],
+          pasos: ["Cortar papas en rodajas gruesas","Sofreír cebolla y ajo 3-4 min","Añadir longaniza, dorar 3 min","Agregar pimentón, remover rápido","Añadir papas, laurel, cubrir con agua","Cocinar 25-30 min hasta tiernas","La salsa queda espesa por el almidón","Rectificar sal y servir caliente"]
+        },
+        "maduros": {
+          nombre: "Plátanos Maduros con Tomate", tiempo: "30 min", porciones: "4 personas", origen: "🇩🇴🇪🇸 Fusión",
+          ingredientes: ["4 plátanos maduros en rodajas","3 tomates picados o pasta tomate","1 cebolla, 3 ajos, 1 ají","Pizca azúcar, sal","½ lb queso de freír","3 cda aceite"],
+          pasos: ["Cortar plátanos en rodajas de 1 pulgada","Dorar plátanos por ambos lados, reservar","Sofreír cebolla, ajo, ají 3 min","Añadir tomates, cocinar 5 min","Agregar pizca de azúcar","Devolver plátanos, cocinar 10 min","Añadir queso en cubos últimos 3 min","Servir caliente"]
+        },
+        "lentejas": {
+          nombre: "Lentejas con Longaniza", tiempo: "45 min", porciones: "4 personas", origen: "🇪🇸 España",
+          ingredientes: ["1 lb lentejas (sin remojo)","½ lb longaniza en rodajas","1 cebolla, 2 zanahorias","3 ajos, 1 laurel","1 cda pimentón","4 tazas agua, sal"],
+          pasos: ["Sofreír cebolla, ajo, zanahoria 4 min","Añadir longaniza, dorar 3 min","Agregar pimentón 30 seg","Añadir lentejas, laurel y agua","Hervir, bajar fuego medio","Cocinar 30-35 min","Sal AL FINAL","Deben quedar caldosas"]
+        },
+        "merluza": {
+          nombre: "Merluza en Salsa Verde", tiempo: "35 min", porciones: "4 personas", origen: "🇪🇸 España",
+          ingredientes: ["1.5 lb merluza en filetes","4 ajos en láminas","1 taza perejil/cilantro","½ taza vino o limón","1 taza caldo","3 cda aceite, 1 cda harina","Sal y pimienta"],
+          pasos: ["Salpimentar filetes","Dorar ajos en aceite, reservar","Sellar merluza 1 min/lado, reservar","Añadir harina al aceite","Agregar vino, evaporar alcohol","Añadir caldo, perejil, ajos","Devolver merluza 8-10 min","Mover sartén para emulsionar"]
+        },
+        "mangu": {
+          nombre: "Mangú con 3 Golpes", tiempo: "25 min", porciones: "4 personas", origen: "🇩🇴 Dominicana",
+          ingredientes: ["6-8 plátanos verdes","Agua con sal","4 cda mantequilla","½ lb salami, ½ lb queso freír","6-8 huevos","1 cebolla roja, 2 cda vinagre"],
+          pasos: ["Pelar y cortar plátanos","Hervir 20 min hasta blandos","Escurrir guardando agua","Machacar con mantequilla","Freír salami crujiente","Freír queso dorado","Freír huevos al gusto","Cebolla: aros en vinagre + aceite caliente","Servir todo junto"]
+        },
+        "tortilla": {
+          nombre: "Tortilla Española", tiempo: "30 min", porciones: "4 personas", origen: "🇪🇸 España",
+          ingredientes: ["1.5 lb papas peladas","6 huevos grandes","1 cebolla (opcional)","1 taza aceite","Sal"],
+          pasos: ["Cortar papas en rodajas finas","Cortar cebolla en juliana","Freír papas y cebolla 15-20 min","Deben quedar tiernas, no crujientes","Escurrir bien el aceite","Batir huevos, mezclar con papas","En sartén con poco aceite, verter","Cocinar bajo 5 min, voltear","Otro lado 3-4 min, jugosa dentro"]
+        },
+        "garbanzos": {
+          nombre: "Garbanzos con Espinacas", tiempo: "50 min", porciones: "4 personas", origen: "🇪🇸 Sevilla",
+          ingredientes: ["1 lb garbanzos (lata o cocidos)","1 manojo espinacas","4 ajos, 1 pan frito","1 cdita comino, pimentón","2 cda vinagre, aceite, sal"],
+          pasos: ["Si secos: remojar noche, cocinar 45 min","Hervir espinacas 5 min, escurrir","Majado: machacar ajo+pan+comino+pimentón+vinagre","Sofreír majado 2 min","Añadir garbanzos, mezclar","Agregar espinacas + caldo","Cocinar junto 10 min","Mejor al día siguiente"]
+        },
+        "pollo-guisado": {
+          nombre: "Pollo Guisado Dominicano", tiempo: "45 min", porciones: "4 personas", origen: "🇩🇴 Dominicana",
+          ingredientes: ["2 lb pollo en piezas","Jugo 2 limones","4 ajos, 1 cebolla, 1 ají","3 cda pasta tomate","2 cda sazón, orégano","Aceitunas opcional"],
+          pasos: ["Lavar pollo con limón","Adobar con ajo, orégano, sazón 30 min","Dorar pollo por todos lados","Retirar, sofreír cebolla y ají","Añadir pasta tomate 2 min","Devolver pollo + 1 taza agua","Tapar, cocinar 25-30 min","Aceitunas últimos 5 min"]
+        },
+        "pollo-ajillo": {
+          nombre: "Pollo al Ajillo", tiempo: "40 min", porciones: "4 personas", origen: "🇪🇸 España",
+          ingredientes: ["2 lb pollo en piezas","10-12 ajos en láminas","Guindilla opcional","½ taza vino blanco","½ taza aceite oliva","Perejil, sal, pimienta"],
+          pasos: ["Salpimentar pollo","Dorar 5 min por lado","Bajar fuego, tapar 15 min","Retirar pollo, reservar","Dorar ajos a fuego bajo","Añadir guindilla 30 seg","Subir fuego, añadir vino","Reducir mitad, devolver pollo","Bañar con salsa, perejil"]
+        },
+        "sancocho": {
+          nombre: "Sancocho Dominicano", tiempo: "55 min", porciones: "6-8 personas", origen: "🇩🇴 Dominicana",
+          ingredientes: ["1 lb res, ½ lb pollo","3 plátanos verdes","½ lb yuca, maíz opcional","Cebolla, 5 ajos","Cilantro, orégano, sazón","Limón agrio"],
+          pasos: ["Lavar carnes con limón","Res en agua fría, hervir 20 min","Añadir pollo 10 min más","Agregar plátanos y yuca","Añadir cebolla, ajo, sazón","Cocinar 15-20 min","Caldo espeso por el plátano","Cilantro fresco al final","Servir con arroz y aguacate"]
+        },
+        "locrio": {
+          nombre: "Locrio de Pollo", tiempo: "45 min", porciones: "4 personas", origen: "🇩🇴 Dominicana",
+          ingredientes: ["2 lb pollo en piezas","2 tazas arroz","3 tazas agua/caldo","1 cebolla, 1 ají, 4 ajos","3 cda pasta tomate","Sazón, orégano, sal"],
+          pasos: ["Adobar pollo con ajo, orégano, sazón","Dorar pollo, reservar","Sofreír cebolla y ají","Añadir pasta tomate 2 min","Agregar arroz lavado, mezclar","Añadir agua caliente y sal","Poner pollo encima","Fuego alto hasta secar","Bajar mínimo, tapar 20 min","Arroz seco con concón abajo"]
+        },
+        "cerdo-moro": {
+          nombre: "Cerdo con Moro", tiempo: "55 min", porciones: "4 personas", origen: "🇩🇴 Dominicana",
+          ingredientes: ["1.5 lb cerdo en trozos","2 tazas arroz","1 lata habichuelas rojas","Cebolla, ajo, ají","Pasta tomate, sazón, orégano"],
+          pasos: ["Adobar cerdo igual que pollo","Dorar, cocinar tapado 30 min","Moro: sofreír cebolla, ajo, ají","Añadir habichuelas + 2 tazas agua","Cuando hierva, añadir arroz y sal","Cocinar hasta secar","Bajar fuego, tapar 20 min","Servir cerdo sobre moro"]
+        },
+        "espaguetis": {
+          nombre: "Espaguetis con Carne", tiempo: "35 min", porciones: "4 personas", origen: "🇮🇹🇩🇴 Fusión",
+          ingredientes: ["1 paq espaguetis","½ lb carne molida","3 cda pasta tomate","1 cebolla, 3 ajos","1 cdita azúcar, orégano, sal"],
+          pasos: ["Hervir espaguetis, escurrir","Dorar carne desmenuzando","Añadir cebolla y ajo 3 min","Agregar pasta tomate + 1 taza agua","Añadir azúcar, orégano, sal","Cocinar salsa 10 min","Mezclar con espaguetis"]
+        }
+      }
+    };
+
+    // STATE
+    let selectedDay = 0;
+    let checkedItems = JSON.parse(localStorage.getItem('menuChecked') || '{}');
+
+    // FUNCTIONS
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      document.querySelector(`nav button[data-tab="${tabId}"]`).classList.add('active');
+    }
+
+    function showDay(dayIndex) {
+      selectedDay = dayIndex;
+      document.querySelectorAll('.day-btn').forEach((b, i) => {
+        b.classList.toggle('active', i === dayIndex);
+      });
+      const day = menuData.days[dayIndex];
+      document.getElementById('day-title').textContent = day.name;
+      
+      let html = '';
+      day.meals.forEach(meal => {
+        html += `
+          <div class="menu-item" ${meal.receta ? `onclick="showRecipe('${meal.receta}')"` : ''}>
+            <div class="tipo">${meal.tipo}</div>
+            <h3>${meal.plato}</h3>
+            <span class="tiempo">⏱️ ${meal.tiempo}</span>
+            ${meal.receta ? '<span class="ver-receta">👆 Toca para ver receta</span>' : ''}
+          </div>
+        `;
+      });
+      document.getElementById('day-meals').innerHTML = html;
+    }
+
+    function renderShopping() {
+      let html = '';
+      let itemIndex = 0;
+      
+      for (const [category, items] of Object.entries(menuData.shopping)) {
+        const catTotal = items.reduce((sum, i) => sum + i.precio, 0);
+        html += `<div class="card">
+          <div class="category-header">
+            <span>${category}</span>
+            <span class="price">RD$${catTotal.toLocaleString()}</span>
+          </div>`;
+        
+        items.forEach((item, i) => {
+          const key = `${category}-${i}`;
+          const checked = checkedItems[key] || false;
+          html += `
+            <div class="shop-item ${checked ? 'checked' : ''}" onclick="toggleItem('${key}', this)">
+              <input type="checkbox" ${checked ? 'checked' : ''}>
+              <div class="item-info">
+                <span class="item-name">${item.nombre}</span>
+                <span class="item-qty">(${item.cantidad})</span>
+              </div>
+              <div class="item-price">RD$${item.precio}</div>
+            </div>
+          `;
+          itemIndex++;
+        });
+        html += '</div>';
+      }
+      
+      document.getElementById('shopping-list').innerHTML = html;
+      updateProgress();
+    }
+
+    function toggleItem(key, el) {
+      checkedItems[key] = !checkedItems[key];
+      localStorage.setItem('menuChecked', JSON.stringify(checkedItems));
+      el.classList.toggle('checked');
+      el.querySelector('input').checked = checkedItems[key];
+      updateProgress();
+    }
+
+    function updateProgress() {
+      let total = 0, checked = 0, checkedTotal = 0;
+      
+      for (const [category, items] of Object.entries(menuData.shopping)) {
+        items.forEach((item, i) => {
+          total++;
+          const key = `${category}-${i}`;
+          if (checkedItems[key]) {
+            checked++;
+            checkedTotal += item.precio;
+          }
+        });
+      }
+      
+      const pct = total > 0 ? (checked / total) * 100 : 0;
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('items-count').textContent = `${checked}/${total} items`;
+      document.getElementById('checked-total').textContent = checkedTotal.toLocaleString();
+    }
+
+    function renderRecipes() {
+      let html = '<h2 style="font-weight:700;margin-bottom:16px">Todas las Recetas</h2>';
+      
+      for (const [id, recipe] of Object.entries(menuData.recipes)) {
+        html += `
+          <div class="recipe-card" onclick="showRecipe('${id}')">
+            <h3>${recipe.nombre}</h3>
+            <div class="origin">${recipe.origen}</div>
+            <span class="tiempo" style="float:right;margin-top:-24px">⏱️ ${recipe.tiempo}</span>
+          </div>
+        `;
+      }
+      
+      document.getElementById('recipe-list').innerHTML = html;
+    }
+
+    function showRecipe(id) {
+      showTab('recetas');
+      const recipe = menuData.recipes[id];
+      if (!recipe) return;
+      
+      document.getElementById('recipe-list').style.display = 'none';
+      
+      let html = `
+        <button class="back-btn" onclick="hideRecipe()">← Volver a recetas</button>
+        <div class="card">
+          <div class="card-header">
+            <h2>${recipe.nombre}</h2>
+            <div class="recipe-meta">
+              <span>⏱️ ${recipe.tiempo}</span>
+              <span>👥 ${recipe.porciones}</span>
+              <span>${recipe.origen}</span>
+            </div>
+          </div>
+          <div class="recipe-section">
+            <h3>🥘 Ingredientes</h3>
+            <ul>${recipe.ingredientes.map(i => `<li>${i}</li>`).join('')}</ul>
+          </div>
+          <div class="recipe-section">
+            <h3>👨‍🍳 Preparación</h3>
+            <ol>${recipe.pasos.map(p => `<li>${p}</li>`).join('')}</ol>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('recipe-detail').innerHTML = html;
+      document.getElementById('recipe-detail').classList.add('active');
+    }
+
+    function hideRecipe() {
+      document.getElementById('recipe-list').style.display = 'block';
+      document.getElementById('recipe-detail').classList.remove('active');
+    }
+
+    // INIT
+    document.querySelectorAll('nav button').forEach(btn => {
+      btn.addEventListener('click', () => showTab(btn.dataset.tab));
+    });
+
+    document.querySelectorAll('.day-btn').forEach((btn, i) => {
+      btn.addEventListener('click', () => showDay(i));
+    });
+
+    showDay(0);
+    renderShopping();
+    renderRecipes();
+
+    // PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+
+    // Install prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      showInstallButton();
+    });
+
+    function showInstallButton() {
+      const btn = document.createElement('button');
+      btn.innerHTML = '📲 Instalar App';
+      btn.style.cssText = 'position:fixed;bottom:50px;right:16px;background:var(--red);color:white;border:none;padding:12px 20px;border-radius:25px;font-family:inherit;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,0.3);cursor:pointer;z-index:1000;';
+      btn.onclick = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') btn.remove();
+          deferredPrompt = null;
+        }
+      };
+      document.body.appendChild(btn);
+    }
+  </script>
+</body>
+</html>
